@@ -1,3 +1,6 @@
+// production code
+// last updated July 2022
+
 //"data" refers to the column name with no spaces and no capitals
 //punctuation or numbers in your column name
 //"title" is the column name you want to appear in the published table
@@ -7,6 +10,26 @@ var columns = [
         "data": "area",
         "title": "Area",
         "className": "areaName"
+    },
+    {
+        "data": "area2",
+        "title": "Area2",
+        "render": function(data, type, row) {
+            if (data === undefined) {
+                data = "";
+            }
+            return data;
+        }
+    },
+    {
+        "data": "area3",
+        "title": "Area3",
+        "render": function(data, type, row) {
+            if (data === undefined) {
+                data = "";
+            }
+            return data;
+        }
     },
     {
         "data": "topic",
@@ -178,7 +201,7 @@ $(document).ready(function() {
         "autoWidth": false,
         "pageLength": 999,
         "ajax": { // pull data from google sheet via Sheets API V4
-        url:"https://sheets.googleapis.com/v4/spreadsheets/1eBGe-kC-azvJajnhlrC2DeFcDQrdNFMBW1SoKEzP-A4/values/A:H?key=AIzaSyD8Y28YJpVhE4XlVlOoA74Ws47YdPz5nGA",
+        url:"https://sheets.googleapis.com/v4/spreadsheets/1eBGe-kC-azvJajnhlrC2DeFcDQrdNFMBW1SoKEzP-A4/values/A:J?key=AIzaSyD8Y28YJpVhE4XlVlOoA74Ws47YdPz5nGA",
         cache: true,
         "dataSrc": function(json) {
             var myData = json['values']; //spreadsheet data lives in an array with the name values
@@ -186,25 +209,62 @@ $(document).ready(function() {
             myData = myData.map(function( n, i ) {
                 myObject = {
                     area:n[0],
-                    topic:n[1],
-                    url:n[2],
-                    whomtocontact:n[3],
-                    location:n[4],
-                    email:n[5],
-                    phone:n[6],
-                    information:n[7]
+                    area2:n[1],
+                    area3:n[2],
+                    topic:n[3],
+                    url:n[4],
+                    whomtocontact:n[5],
+                    location:n[6],
+                    email:n[7],
+                    phone:n[8],
+                    information:n[9]
                 };
                 return myObject;
             });
             myData.splice(0,1); //remove the first row, which contains the orginal column headers
+            //for object in myObject:
+            myData.forEach(function extraAreas(obj,index,array) {
+                //if area2 != "":
+                if ("area2" in obj && obj.area2 != "") {
+                    //if area3 != "":
+                    if ("area3" in obj && obj.area3 != "") {
+                        //append to myObject a new object with: area3->area, rest is a copy
+                        myData.push({
+                            area:obj.area3,
+                            area2:"",
+                            area3:"",
+                            topic:obj.topic,
+                            url:obj.url,
+                            whomtocontact:obj.whomtocontact,
+                            location:obj.location,
+                            email:obj.email,
+                            phone:obj.phone,
+                            information:obj.information
+                        });
+                    }
+                    //append to myObject a new object with: area2->area, rest is a copy
+                    myData.push({
+                        area:obj.area2,
+                        area2:"",
+                        area3:"",
+                        topic:obj.topic,
+                        url:obj.url,
+                        whomtocontact:obj.whomtocontact,
+                        location:obj.location,
+                        email:obj.email,
+                        phone:obj.phone,
+                        information:obj.information
+                    });
+                }
+            });
             console.log(myData);
             return myData;
         }
         },
         'columns': columns,
-        'order': [[ 0, "asc" ],[ 1, "asc" ]],
+        'order': [[ 0, "asc" ],[ 3, "asc" ]],
         "columnDefs" : [
-            { "targets": [0], "visible": false}
+            { "targets": [0,1,2], "visible": false}
         ],
         'initComplete' : function (settings) {
             createMenu();
