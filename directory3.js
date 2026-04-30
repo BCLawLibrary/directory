@@ -122,7 +122,7 @@ var columns = [
                 webOutro = "'>Learn More</a>"
             }
 
-            if (data != "" && (row['information'] != "" && row['information'] !== undefined)) {
+            if (row['information'] != "" && row['information'] !== undefined) {
                 var email = /[a-zA-Z0-9-_\.]+@[a-zA-Z-_\.]+\.[a-zA-Z]{3}/g
                 var info = row['information'].replaceAll(email,'<a href="mailto:$&">$&</a>');
                 return info + "<br><br>" + webIntro + data + webOutro;
